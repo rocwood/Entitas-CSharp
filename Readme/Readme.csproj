@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -78,9 +78,7 @@
     <Compile Include="Readme\Components\AnimatingComponent.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="Readme\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Entitas.properties" />
   </ItemGroup>
@@ -88,10 +86,6 @@
     <ProjectReference Include="..\Entitas\Entitas.csproj">
       <Project>{A0A11CC3-8B1E-4345-A5FA-01FC60E581D8}</Project>
       <Name>Entitas</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Addons\Entitas.CodeGeneration.Attributes\Entitas.CodeGeneration.Attributes.csproj">
-      <Project>{76A16CFD-7488-41D3-989B-CA2F1840E638}</Project>
-      <Name>Entitas.CodeGeneration.Attributes</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
