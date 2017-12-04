@@ -3,28 +3,28 @@ using System.Collections.Generic;
 
 namespace Entitas {
 
-    public partial class Matcher<TEntity> {
+    public partial class Matcher {
 
-        public static IAllOfMatcher<TEntity> AllOf(params int[] indices) {
-            var matcher = new Matcher<TEntity>();
+        public static IAllOfMatcher AllOf(params int[] indices) {
+            var matcher = new Matcher();
             matcher._allOfIndices = distinctIndices(indices);
             return matcher;
         }
 
-        public static IAllOfMatcher<TEntity> AllOf(params IMatcher<TEntity>[] matchers) {
-            var allOfMatcher = (Matcher<TEntity>)Matcher<TEntity>.AllOf(mergeIndices(matchers));
+        public static IAllOfMatcher AllOf(params IMatcher[] matchers) {
+            var allOfMatcher = (Matcher)Matcher.AllOf(mergeIndices(matchers));
             setComponentNames(allOfMatcher, matchers);
             return allOfMatcher;
         }
 
-        public static IAnyOfMatcher<TEntity> AnyOf(params int[] indices) {
-            var matcher = new Matcher<TEntity>();
+        public static IAnyOfMatcher AnyOf(params int[] indices) {
+            var matcher = new Matcher();
             matcher._anyOfIndices = distinctIndices(indices);
             return matcher;
         }
 
-        public static IAnyOfMatcher<TEntity> AnyOf(params IMatcher<TEntity>[] matchers) {
-            var anyOfMatcher = (Matcher<TEntity>)Matcher<TEntity>.AnyOf(mergeIndices(matchers));
+        public static IAnyOfMatcher AnyOf(params IMatcher[] matchers) {
+            var anyOfMatcher = (Matcher)Matcher.AnyOf(mergeIndices(matchers));
             setComponentNames(anyOfMatcher, matchers);
             return anyOfMatcher;
         }
@@ -49,7 +49,7 @@ namespace Entitas {
             return mergedIndices;
         }
 
-        static int[] mergeIndices(IMatcher<TEntity>[] matchers) {
+        static int[] mergeIndices(IMatcher[] matchers) {
             var indices = new int[matchers.Length];
             for (int i = 0; i < matchers.Length; i++) {
                 var matcher = matchers[i];
@@ -62,9 +62,9 @@ namespace Entitas {
             return indices;
         }
 
-        static string[] getComponentNames(IMatcher<TEntity>[] matchers) {
+        static string[] getComponentNames(IMatcher[] matchers) {
             for (int i = 0; i < matchers.Length; i++) {
-                var matcher = matchers[i] as Matcher<TEntity>;
+                var matcher = matchers[i] as Matcher;
                 if (matcher != null && matcher.componentNames != null) {
                     return matcher.componentNames;
                 }
@@ -73,7 +73,7 @@ namespace Entitas {
             return null;
         }
 
-        static void setComponentNames(Matcher<TEntity> matcher, IMatcher<TEntity>[] matchers) {
+        static void setComponentNames(Matcher matcher, IMatcher[] matchers) {
             var componentNames = getComponentNames(matchers);
             if (componentNames != null) {
                 matcher.componentNames = componentNames;

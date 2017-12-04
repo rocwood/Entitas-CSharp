@@ -7,29 +7,29 @@ namespace Entitas {
     /// A common use-case is to react to changes, e.g. a change of the position
     /// of an entity to update the gameObject.transform.position
     /// of the related gameObject.
-    public abstract class ReactiveSystem<TEntity> : IReactiveSystem where TEntity : class, IEntity {
+    public abstract class ReactiveSystem : IReactiveSystem {
 
-        readonly ICollector<TEntity> _collector;
-        readonly List<TEntity> _buffer;
+        readonly ICollector _collector;
+        readonly List<Entity> _buffer;
         string _toStringCache;
 
-        protected ReactiveSystem(IContext<TEntity> context) {
+        protected ReactiveSystem(IContext context) {
             _collector = GetTrigger(context);
-            _buffer = new List<TEntity>();
+            _buffer = new List<Entity>();
         }
 
-        protected ReactiveSystem(ICollector<TEntity> collector) {
+        protected ReactiveSystem(ICollector collector) {
             _collector = collector;
-            _buffer = new List<TEntity>();
+            _buffer = new List<Entity>();
         }
 
         /// Specify the collector that will trigger the ReactiveSystem.
-        protected abstract ICollector<TEntity> GetTrigger(IContext<TEntity> context);
+        protected abstract ICollector GetTrigger(IContext context);
 
         /// This will exclude all entities which don't pass the filter.
-        protected abstract bool Filter(TEntity entity);
+        protected abstract bool Filter(Entity entity);
 
-        protected abstract void Execute(List<TEntity> entities);
+        protected abstract void Execute(List<Entity> entities);
 
         /// Activates the ReactiveSystem and starts observing changes
         /// based on the specified Collector.

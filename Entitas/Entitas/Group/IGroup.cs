@@ -3,40 +3,31 @@ using System.Collections.Generic;
 
 namespace Entitas {
 
-    public delegate void GroupChanged<TEntity>(
-        IGroup<TEntity> group, TEntity entity, int index, IComponent component
-    ) where TEntity : class, IEntity;
+    public delegate void GroupChanged(IGroup group, Entity entity, int index, IComponent component);
+    public delegate void GroupUpdated(IGroup group, Entity entity, int index, IComponent previousComponent, IComponent newComponent);
 
-    public delegate void GroupUpdated<TEntity>(
-        IGroup<TEntity> group, TEntity entity, int index,
-        IComponent previousComponent, IComponent newComponent
-    ) where TEntity : class, IEntity;
-
-    public interface IGroup : IEnumerable {
+    public interface IGroup : IEnumerable<Entity> {
 
         int count { get; }
 
         void RemoveAllEventHandlers();
-    }
 
-    public interface IGroup<TEntity> : IGroup, IEnumerable<TEntity> where TEntity : class, IEntity {
+		event GroupChanged OnEntityAdded;
+		event GroupChanged OnEntityRemoved;
+		event GroupUpdated OnEntityUpdated;
 
-        event GroupChanged<TEntity> OnEntityAdded;
-        event GroupChanged<TEntity> OnEntityRemoved;
-        event GroupUpdated<TEntity> OnEntityUpdated;
+		IMatcher matcher { get; }
 
-        IMatcher<TEntity> matcher { get; }
+		void HandleEntitySilently(Entity entity);
+		void HandleEntity(Entity entity, int index, IComponent component);
 
-        void HandleEntitySilently(TEntity entity);
-        void HandleEntity(TEntity entity, int index, IComponent component);
+		GroupChanged HandleEntity(Entity entity);
 
-        GroupChanged<TEntity> HandleEntity(TEntity entity);
+		void UpdateEntity(Entity entity, int index, IComponent previousComponent, IComponent newComponent);
 
-        void UpdateEntity(TEntity entity, int index, IComponent previousComponent, IComponent newComponent);
+		bool ContainsEntity(Entity entity);
 
-        bool ContainsEntity(TEntity entity);
-
-        TEntity[] GetEntities();
-        TEntity GetSingleEntity();
-    }
+		Entity[] GetEntities();
+		Entity GetSingleEntity();
+	}
 }

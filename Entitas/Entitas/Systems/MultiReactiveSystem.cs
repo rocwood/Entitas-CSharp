@@ -7,31 +7,29 @@ namespace Entitas {
     /// A common use-case is to react to changes, e.g. a change of the position
     /// of an entity to update the gameObject.transform.position
     /// of the related gameObject.
-    public abstract class MultiReactiveSystem<TEntity, TContexts> : IReactiveSystem
-        where TEntity : class, IEntity
-        where TContexts : class, IContexts {
+    public abstract class MultiReactiveSystem : IReactiveSystem {
 
         readonly ICollector[] _collectors;
-        readonly List<TEntity> _buffer;
+        readonly List<Entity> _buffer;
         string _toStringCache;
 
-        protected MultiReactiveSystem(TContexts contexts) {
+        protected MultiReactiveSystem(IContexts contexts) {
             _collectors = GetTrigger(contexts);
-            _buffer = new List<TEntity>();
+            _buffer = new List<Entity>();
         }
 
         protected MultiReactiveSystem(ICollector[] collectors) {
             _collectors = collectors;
-            _buffer = new List<TEntity>();
+            _buffer = new List<Entity>();
         }
 
         /// Specify the collector that will trigger the ReactiveSystem.
-        protected abstract ICollector[] GetTrigger(TContexts contexts);
+        protected abstract ICollector[] GetTrigger(IContexts contexts);
 
         /// This will exclude all entities which don't pass the filter.
-        protected abstract bool Filter(TEntity entity);
+        protected abstract bool Filter(Entity entity);
 
-        protected abstract void Execute(List<TEntity> entities);
+        protected abstract void Execute(List<Entity> entities);
 
         /// Activates the ReactiveSystem and starts observing changes
         /// based on the specified Collector.
@@ -65,7 +63,7 @@ namespace Entitas {
             for (int i = 0; i < _collectors.Length; i++) {
                 var collector = _collectors[i];
                 if (collector.count != 0) {
-                    foreach (var e in collector.GetCollectedEntities<TEntity>()) {
+                    foreach (var e in collector.GetCollectedEntities()) {
                         if (Filter(e)) {
                             e.Retain(this);
                             _buffer.Add(e);

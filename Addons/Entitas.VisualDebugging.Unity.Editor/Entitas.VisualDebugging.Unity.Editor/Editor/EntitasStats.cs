@@ -64,8 +64,8 @@ namespace Entitas.VisualDebugging.Unity.Editor {
 
         static bool isSystem(Type type) {
             return type.ImplementsInterface<ISystem>()
-                && type != typeof(ReactiveSystem<>)
-                && type != typeof(MultiReactiveSystem<,>)
+                && type != typeof(ReactiveSystem)
+                && type != typeof(MultiReactiveSystem)
                 && type != typeof(Systems)
                 && type != typeof(DebugSystems);
         }

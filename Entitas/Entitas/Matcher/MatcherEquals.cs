@@ -1,6 +1,6 @@
 namespace Entitas {
 
-    public partial class Matcher<TEntity> {
+    public partial class Matcher {
 
         public override bool Equals(object obj) {
             if (obj == null || obj.GetType() != GetType() ||
@@ -8,7 +8,7 @@ namespace Entitas {
                 return false;
             }
 
-            var matcher = (Matcher<TEntity>)obj;
+            var matcher = (Matcher)obj;
             if (!equalIndices(matcher.allOfIndices, _allOfIndices)) {
                 return false;
             }

@@ -9,7 +9,7 @@ namespace Entitas {
     /// You can create and destroy entities and get groups of entities.
     /// The prefered way to create a context is to use the generated methods
     /// from the code generator, e.g. var context = new GameContext();
-    public class Context<TEntity> : IContext<TEntity> where TEntity : class, IEntity {
+    public class Context : IContext {
 
         /// Occurs when an entity gets created.
         public event ContextEntityChanged OnEntityCreated;
@@ -56,19 +56,18 @@ namespace Entitas {
         readonly ContextInfo _contextInfo;
         readonly Func<IEntity, IAERC> _aercFactory;
 
-        readonly HashSet<TEntity> _entities = new HashSet<TEntity>(EntityEqualityComparer<TEntity>.comparer);
-        readonly Stack<TEntity> _reusableEntities = new Stack<TEntity>();
-        readonly HashSet<TEntity> _retainedEntities = new HashSet<TEntity>(EntityEqualityComparer<TEntity>.comparer);
-
-        readonly Dictionary<IMatcher<TEntity>, IGroup<TEntity>> _groups = new Dictionary<IMatcher<TEntity>, IGroup<TEntity>>();
-        readonly List<IGroup<TEntity>>[] _groupsForIndex;
-        readonly ObjectPool<List<GroupChanged<TEntity>>> _groupChangedListPool;
+        readonly HashSet<Entity> _entities = new HashSet<Entity>(EntityEqualityComparer.comparer);
+        readonly Stack<Entity> _reusableEntities = new Stack<Entity>();
+        readonly HashSet<Entity> _retainedEntities = new HashSet<Entity>(EntityEqualityComparer.comparer);
 
         readonly Dictionary<string, IEntityIndex> _entityIndices;
+        readonly Dictionary<IMatcher, IGroup> _groups = new Dictionary<IMatcher, IGroup>();
+        readonly List<IGroup>[] _groupsForIndex;
+        readonly ObjectPool<List<GroupChanged>> _groupChangedListPool;
 
         int _creationIndex;
 
-        TEntity[] _entitiesCache;
+        Entity[] _entitiesCache;
 
         // Cache delegates to avoid gc allocations
         EntityComponentChanged _cachedEntityChanged;
@@ -108,11 +107,12 @@ namespace Entitas {
                 ? (entity) => new SafeAERC(entity)
                 : aercFactory;
 
-            _groupsForIndex = new List<IGroup<TEntity>>[totalComponents];
+            _groupsForIndex = new List<IGroup>[totalComponents];
             _componentPools = new Stack<IComponent>[totalComponents];
             _entityIndices = new Dictionary<string, IEntityIndex>();
-            _groupChangedListPool = new ObjectPool<List<GroupChanged<TEntity>>>(
-                                        () => new List<GroupChanged<TEntity>>(),
+
+			_groupChangedListPool = new ObjectPool<List<GroupChanged>>(
+                                        () => new List<GroupChanged>(),
                                         list => list.Clear()
                                     );
 
@@ -135,14 +135,14 @@ namespace Entitas {
 
         /// Creates a new entity or gets a reusable entity from the
         /// internal ObjectPool for entities.
-        public TEntity CreateEntity() {
-            TEntity entity;
+        public Entity CreateEntity() {
+            Entity entity;
 
             if (_reusableEntities.Count > 0) {
                 entity = _reusableEntities.Pop();
                 entity.Reactivate(_creationIndex++);
             } else {
-                entity = (TEntity)Activator.CreateInstance(typeof(TEntity));
+                entity = (Entity)Activator.CreateInstance(typeof(Entity));
                 entity.Initialize(_creationIndex++, _totalComponents, _componentPools, _contextInfo, _aercFactory(entity));
             }
 
@@ -166,7 +166,7 @@ namespace Entitas {
         /// to the internal ObjectPool for entities.
         // TODO Obsolete since 0.42.0, April 2017
         [Obsolete("Please use entity.Destroy()")]
-        public void DestroyEntity(TEntity entity) {
+        public void DestroyEntity(Entity entity) {
             var removed = _entities.Remove(entity);
             if (!removed) {
                 throw new ContextDoesNotContainEntityException(
@@ -215,14 +215,14 @@ namespace Entitas {
         }
 
         /// Determines whether the context has the specified entity.
-        public bool HasEntity(TEntity entity) {
+        public bool HasEntity(Entity entity) {
             return _entities.Contains(entity);
         }
 
         /// Returns all entities which are currently in the context.
-        public TEntity[] GetEntities() {
+        public Entity[] GetEntities() {
             if (_entitiesCache == null) {
-                _entitiesCache = new TEntity[_entities.Count];
+                _entitiesCache = new Entity[_entities.Count];
                 _entities.CopyTo(_entitiesCache);
             }
 
@@ -232,10 +232,10 @@ namespace Entitas {
         /// Returns a group for the specified matcher.
         /// Calling context.GetGroup(matcher) with the same matcher will always
         /// return the same instance of the group.
-        public IGroup<TEntity> GetGroup(IMatcher<TEntity> matcher) {
-            IGroup<TEntity> group;
+        public IGroup GetGroup(IMatcher matcher) {
+            IGroup group;
             if (!_groups.TryGetValue(matcher, out group)) {
-                group = new Group<TEntity>(matcher);
+                group = new Group(matcher);
                 var entities = GetEntities();
                 for (int i = 0; i < entities.Length; i++) {
                     group.HandleEntitySilently(entities[i]);
@@ -245,7 +245,7 @@ namespace Entitas {
                 for (int i = 0; i < matcher.indices.Length; i++) {
                     var index = matcher.indices[i];
                     if (_groupsForIndex[index] == null) {
-                        _groupsForIndex[index] = new List<IGroup<TEntity>>();
+                        _groupsForIndex[index] = new List<IGroup>();
                     }
                     _groupsForIndex[index].Add(group);
                 }
@@ -319,7 +319,7 @@ namespace Entitas {
             if (groups != null) {
                 var events = _groupChangedListPool.Get();
 
-                    var tEntity = (TEntity)entity;
+                    var tEntity = (Entity)entity;
 
                     for (int i = 0; i < groups.Count; i++) {
                         events.Add(groups[i].HandleEntity(tEntity));
@@ -342,7 +342,7 @@ namespace Entitas {
             var groups = _groupsForIndex[index];
             if (groups != null) {
 
-                var tEntity = (TEntity)entity;
+                var tEntity = (Entity)entity;
 
                 for (int i = 0; i < groups.Count; i++) {
                     groups[i].UpdateEntity(
@@ -358,14 +358,14 @@ namespace Entitas {
                     "Cannot release " + entity + "!"
                 );
             }
-            var tEntity = (TEntity)entity;
+            var tEntity = (Entity)entity;
             entity.RemoveAllOnEntityReleasedHandlers();
             _retainedEntities.Remove(tEntity);
             _reusableEntities.Push(tEntity);
         }
 
         void onDestroyEntity(IEntity entity) {
-            DestroyEntity((TEntity)entity);
+            DestroyEntity((Entity)entity);
         }
     }
 }
