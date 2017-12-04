@@ -29,8 +29,6 @@ namespace PerformanceTests {
             run<MatcherEquals>();
             run<MatcherGetHashCode>();
 
-            run<ContextCreateBlueprint>();
-
             run<NewInstanceT>();
             run<NewInstanceActivator>();
 

@@ -3,27 +3,27 @@ using Entitas;
 public class EntityReplaceComponent : IPerformanceTest {
 
     const int n = 1000000;
-    IContext<Entity> _context;
+    IContext _context;
     IEntity _e;
 
     public void Before() {
         _context = Helper.CreateContext();
-        _context.GetGroup(Matcher<Entity>.AllOf(new [] { CP.ComponentA }));
-        _context.GetGroup(Matcher<Entity>.AllOf(new [] { CP.ComponentB }));
-        _context.GetGroup(Matcher<Entity>.AllOf(new [] { CP.ComponentC }));
-        _context.GetGroup(Matcher<Entity>.AllOf(new [] {
+        _context.GetGroup(Matcher.AllOf(new [] { CP.ComponentA }));
+        _context.GetGroup(Matcher.AllOf(new [] { CP.ComponentB }));
+        _context.GetGroup(Matcher.AllOf(new [] { CP.ComponentC }));
+        _context.GetGroup(Matcher.AllOf(new [] {
             CP.ComponentA,
             CP.ComponentB
         }));
-        _context.GetGroup(Matcher<Entity>.AllOf(new [] {
+        _context.GetGroup(Matcher.AllOf(new [] {
             CP.ComponentA,
             CP.ComponentC
         }));
-        _context.GetGroup(Matcher<Entity>.AllOf(new [] {
+        _context.GetGroup(Matcher.AllOf(new [] {
             CP.ComponentB,
             CP.ComponentC
         }));
-        _context.GetGroup(Matcher<Entity>.AllOf(new [] {
+        _context.GetGroup(Matcher.AllOf(new [] {
             CP.ComponentA,
             CP.ComponentB,
             CP.ComponentC

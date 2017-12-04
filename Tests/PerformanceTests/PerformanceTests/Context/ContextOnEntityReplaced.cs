@@ -3,12 +3,12 @@ using Entitas;
 public class ContextOnEntityReplaced : IPerformanceTest {
 
     const int n = 100000;
-    IContext<Entity> _context;
+    IContext _context;
     IEntity _e;
 
     public void Before() {
         _context = Helper.CreateContext();
-        _context.GetGroup(Matcher<Entity>.AllOf(new [] { CP.ComponentA }));
+        _context.GetGroup(Matcher.AllOf(new [] { CP.ComponentA }));
         _e = _context.CreateEntity();
         _e.AddComponent(CP.ComponentA, new ComponentA());
     }
