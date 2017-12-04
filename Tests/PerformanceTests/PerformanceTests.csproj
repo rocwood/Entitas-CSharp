@@ -53,7 +53,6 @@
     <Compile Include="PerformanceTests\Context\ContextCreateEntity.cs" />
     <Compile Include="PerformanceTests\Context\ContextGetGroup.cs" />
     <Compile Include="PerformanceTests\Context\ContextOnEntityReplaced.cs" />
-    <Compile Include="PerformanceTests\Context\ContextCreateBlueprint.cs" />
     <Compile Include="PerformanceTests\Context\ContextGetEntities.cs" />
     <Compile Include="PerformanceTests\Context\ContextHasEntity.cs" />
     <Compile Include="PerformanceTests\Context\ContextDestroyAllEntities.cs" />
