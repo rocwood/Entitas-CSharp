@@ -45,6 +45,10 @@ namespace Entitas.VisualDebugging.Unity.Editor {
         }
 
         static Dictionary<string, int> getContexts(Type[] components) {
+			// TODO: use attribute to fetch context info
+			return new Dictionary<string, int>();
+
+			/*
             var preferences = Preferences.sharedInstance;
             preferences.Refresh();
             var provider = new ContextsComponentDataProvider();
@@ -60,6 +64,7 @@ namespace Entitas.VisualDebugging.Unity.Editor {
                 }
                 return contexts;
             });
+			*/
         }
 
         static bool isSystem(Type type) {
